@@ -7,6 +7,8 @@
 
 -include_lib("wx/include/wx.hrl").
 
+-define(wxMAC_USE_CORE_GRAPHICS, 1).
+
 %% This is to save things to the state
 %%-record(state,
 %%		{
@@ -33,9 +35,9 @@ start() ->
 		%% Don't care about drawing the outlines (yet?) so no Pen for now
 		%%Pen = wxPen:new(),
 		%%wxPen:setWidth(Pen, 3),
-		%%wxPen:setColour(Pen, ?wxBLACK),
+		%%wxPen:setColour(Pen, ?wxWHITE),
 		Brush = wxBrush:new(),
-		wxBrush:setColour(Brush, ?wxBLACK),
+		wxBrush:setColour(Brush, ?wxWHITE),
 		%%wxGraphicsContext:setPen(Canvas, Pen),
 		wxGraphicsContext:setBrush(Canvas, Brush),
 		wxGraphicsContext:drawLines(Canvas, [{190, 90}, {190,60}, {50, 60}], [{fillStyle, ?wxODDEVEN_RULE}]),
@@ -46,6 +48,7 @@ start() ->
 	wxFrame:connect(Panel, paint, [{callback, OnPaint}]),
 	wxFrame:connect(Frame, close_window), % works   ??
 
+  wxPanel:setBackgroundColour(Panel, ?wxBLACK),
 	wxFrame:center(Frame),
 	wxFrame:show(Frame),
 	loop({Frame, Panel, Entities}).
