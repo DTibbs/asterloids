@@ -65,23 +65,48 @@ loop(State) ->
 			io:format("Closing window ~n", []),
 			wxWindow:destroy(Win),
 			ok;
-		#wx{event=#wxKey{rawCode = KeyCode}} ->
+		#wx{event=#wxKey{rawCode = KeyCode, type = key_down}} ->
     		case KeyCode of
-        		$c ->
-	    			%%wxFrame:destroy(S#state.frame),
-	    			%%opt_unlink(S#state.parent_pid),
-            		%%{stop, normal, S};
-            	io:format("Closing window ~n", []),
-				wxWindow:destroy(Win);
-        		%%$f ->
-
-        	%% default
-        	_ ->
-            	io:format("~p: ignored: ~p~n", [?MODULE, KeyCode])
+    			32286 ->
+    				io:format("Up pressed ~n", []);
+    			32031 ->
+    				io:format("Down pressed ~n", []);
+    			31516 ->
+    				io:format("Left pressed ~n", []);
+    			31773 ->
+    				io:format("Right pressed ~n", []);
+        		%% default
+        		_ ->
+            		io:format("~p: key_down ignored: ~p~n", [?MODULE, KeyCode])
         	end,
         	loop(State);
 
-		%A = #wx{id = ID, event=#wxCommand{type = command_button}}
+        #wx{event=#wxKey{rawCode = KeyCode, type = key_up}} ->
+    		case KeyCode of
+        		%% Up
+        		32286 ->
+    				io:format("Up pressed ~n", []);
+    			%% Down
+    			32031 ->
+    				io:format("Down pressed ~n", []);
+    			%% Left
+    			31516 ->
+    				io:format("Left pressed ~n", []);
+    			%% Right
+    			31773 ->
+    				io:format("Right pressed ~n", []);
+    			
+    			%%%% Q
+    			%%3185 ->
+    			%%    io:format("Closing window ~n", []),
+				%%	wxWindow:destroy(Win),
+				%%	ok;
+        		
+        		%% default
+        		_ ->
+            		io:format("~p: key_up ignored: ~p~n", [?MODULE, KeyCode])
+        	end,
+        	loop(State);
 
 		Msg ->
 			%everthing else ends up here
