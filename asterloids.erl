@@ -33,7 +33,7 @@ start() ->
 		wxPen:setWidth(Pen, 3),
 		wxPen:setColour(Pen, ?wxBLACK),
 		wxGraphicsContext:setPen(Canvas, Pen),
-		wxGraphicsContext:drawLines(Canvas, {50, 60}, {190,60}),
+		wxGraphicsContext:drawLines(Canvas, [{50, 60}, {190,60}]),
 		wxGraphicsContext:destroy(Canvas)
 	end,
 
