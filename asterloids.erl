@@ -27,11 +27,11 @@
 start() ->
 	Wx = wx:new(),
 	Frame = wxFrame:new(Wx, -1, "FIRST", [{size, {800,600}}]),
-	Panel = wxPanel:new(Frame),
+	Win = wxPanel:new(Frame, [{style, ?wxFULL_REPAINT_ON_RESIZE}]),
 	Entities = [],
 
 	OnPaint = fun(_Evt, _Obj) ->
-		Canvas = wxGraphicsContext:create(Panel),
+		Canvas = wxGraphicsContext:create(Win),
 		%% Don't care about drawing the outlines (yet?) so no Pen for now
 		%%Pen = wxPen:new(),
 		%%wxPen:setWidth(Pen, 3),
@@ -45,27 +45,46 @@ start() ->
 	end,
 
 	%% Connect some callbacks/messages
-	wxFrame:connect(Panel, paint, [{callback, OnPaint}]),
-	wxFrame:connect(Frame, close_window), % works   ??
-
-  wxPanel:setBackgroundColour(Panel, ?wxBLACK),
+	wxWindow:connect(Win, paint, [{callback, OnPaint}]),
+	wxWindow:connect(Win, close_window), % works   ??
+	wxWindow:connect(Win, key_down),
+	wxWindow:connect(Win, key_up),
+	
+	wxPanel:setBackgroundColour(Win, ?wxBLACK),
 	wxFrame:center(Frame),
 	wxFrame:show(Frame),
-	loop({Frame, Panel, Entities}).
+	loop({Win, Entities}).
 
 
 %% Main loop updating entities and rendering
 loop(State) ->
-	{Frame, Panel, Entities} = State,
+	{Win, Entities} = State,
 	io:format("--waiting in main loop--~n", []),
 	receive
 		#wx{event=#wxClose{}} ->
 			io:format("Closing window ~n", []),
-			wxWindow:destroy(Frame),
+			wxWindow:destroy(Win),
 			ok;
-	%A = #wx{id = ID, event=#wxCommand{type = command_button}}
-	Msg ->
-		%everthing else ends up here
-		io:format("loop default triggered: Got ~n ~p ~n", [Msg]),
-		loop(State)
-end.
+		#wx{event=#wxKey{rawCode = KeyCode}} ->
+    		case KeyCode of
+        		$c ->
+	    			%%wxFrame:destroy(S#state.frame),
+	    			%%opt_unlink(S#state.parent_pid),
+            		%%{stop, normal, S};
+            	io:format("Closing window ~n", []),
+				wxWindow:destroy(Win);
+        		%%$f ->
+
+        	%% default
+        	_ ->
+            	io:format("~p: ignored: ~p~n", [?MODULE, KeyCode])
+        	end,
+        	loop(State);
+
+		%A = #wx{id = ID, event=#wxCommand{type = command_button}}
+
+		Msg ->
+			%everthing else ends up here
+			io:format("loop default triggered: Got ~n ~p ~n", [Msg]),
+			loop(State)
+	end.
